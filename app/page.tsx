@@ -1,4 +1,3 @@
-import Image from "next/image";
 import NavBar from "@/components/NavBar";
 import TextAndImage from "@/components/TextAndImage";
 import Cardapio from "@/components/Cardápio";
