@@ -1,5 +1,5 @@
 "use client";
-
+import { useState } from "react";
 import * as React from "react";
 import Link from "next/link";
 import {
@@ -11,13 +11,42 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-// Opcional: import { Menu } from "lucide-react"; se quiser um ícone de menu no futuro
 
 export default function NavBar() {
+  //
+  const [local, setLocal] = useState("inicio");
+  React.useEffect(() => {
+    const observerOptions = {
+      root: null,
+      rootMargin: "-50% 0px -50% 0px",
+      threshold: 0,
+    };
+
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setLocal(entry.target.id);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(
+      observerCallback,
+      observerOptions,
+    );
+
+    const sections = ["inicio", "cardapio", "contato"];
+    sections.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <header className="w-full border-b border-zinc-200 bg-white sticky top-0 z-50">
       <div className="container mx-auto flex h-16 md:h-20 items-center justify-between px-4 md:px-8">
-        {/* 1. LOGO - Ajuste de tamanho responsivo */}
         <div className="flex-none">
           <Link
             href="/"
@@ -27,16 +56,20 @@ export default function NavBar() {
           </Link>
         </div>
 
-        {/* 2. MENU (Centro) - Escondido no mobile (hidden), visível no desktop (md:flex) */}
         <NavigationMenu className="hidden md:flex">
           <NavigationMenuList className="gap-2">
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
                 <Link
-                  href="/"
+                  href="#inicio"
                   className={cn(
                     navigationMenuTriggerStyle(),
-                    "font-medium text-lg tracking-widest uppercase border-b-2 border-green-600 rounded-none bg-transparent cursor-pointer",
+                    "relative h-10 w-max bg-transparent px-4 py-2 transition-colors",
+                    "hover:bg-transparent hover:text-green-600 focus:bg-transparent focus:outline-none active:bg-transparent",
+                    "font-medium text-lg tracking-widest uppercase rounded-none",
+                    local === "inicio"
+                      ? "border-b-2 border-green-600 text-green-600"
+                      : "border-b-2 border-transparent text-zinc-500",
                   )}
                 >
                   Início
@@ -47,10 +80,15 @@ export default function NavBar() {
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
                 <Link
-                  href="/a-la-carte"
+                  href="#cardapio"
                   className={cn(
                     navigationMenuTriggerStyle(),
-                    "font-medium text-lg tracking-widest uppercase bg-transparent cursor-pointer",
+                    "relative h-10 w-max bg-transparent px-4 py-2 transition-colors",
+                    "hover:bg-transparent hover:text-green-600 focus:bg-transparent focus:outline-none active:bg-transparent",
+                    "font-medium text-lg tracking-widest uppercase rounded-none",
+                    local === "cardapio"
+                      ? "border-b-2 border-green-600 text-green-600"
+                      : "border-b-2 border-transparent text-zinc-500",
                   )}
                 >
                   Cardápio
@@ -61,10 +99,15 @@ export default function NavBar() {
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
                 <Link
-                  href="/lunch"
+                  href="#contato"
                   className={cn(
                     navigationMenuTriggerStyle(),
-                    "font-medium text-lg tracking-widest uppercase bg-transparent cursor-pointer",
+                    "relative h-10 w-max bg-transparent px-4 py-2 transition-colors",
+                    "hover:bg-transparent hover:text-green-600 focus:bg-transparent focus:outline-none active:bg-transparent",
+                    "font-medium text-lg tracking-widest uppercase rounded-none",
+                    local === "contato"
+                      ? "border-b-2 border-green-600 text-green-600"
+                      : "border-b-2 border-transparent text-zinc-500",
                   )}
                 >
                   Contato
@@ -74,10 +117,8 @@ export default function NavBar() {
           </NavigationMenuList>
         </NavigationMenu>
 
-        {/* 3. BOTÃO (Direita) - Ajuste de padding e fonte para não esmagar no mobile */}
         <div className="flex-none ml-2">
           <Button className="bg-[#8CB369] hover:bg-[#7a9d5a] text-white rounded-none px-4 py-4 md:px-6 md:py-6 text-[10px] md:text-sm font-bold tracking-widest uppercase">
-            {/* Texto reduzido ou apenas "Pedir" no mobile se preferir */}
             Peça Agora
           </Button>
         </div>
